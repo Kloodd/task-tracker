@@ -1,9 +1,17 @@
-import { useState } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import Login from "./components/Login";
+import TaskList from "./components/TaskList";
 import "./App.css";
 
 function App() {
   return (
-    <h1>Hello Vite + React</h1>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/tasks" element={<TaskList />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
