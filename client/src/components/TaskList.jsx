@@ -1,7 +1,7 @@
 import { Listy } from "antd";
 import { useEffect, useState } from "react";
 
-function TaskList() {
+function TaskList({ refreshTrigger }) {
   const [tasks, setTasks] = useState([]);
   useEffect(() => {
     const fetchTasks = async () => {
@@ -18,7 +18,7 @@ function TaskList() {
       setTasks(data);
     };
     fetchTasks();
-  }, []);
+  }, [refreshTrigger]);
 
   return (
     <div>
@@ -32,6 +32,15 @@ function TaskList() {
             <strong>{task.Title}</strong>
 
             <div>{task.Description}</div>
+
+            <div>Status: {task.Status}</div>
+
+            <div>
+              Due Date:{" "}
+              {task.DueDate
+                ? new Date(task.DueDate).toLocaleDateString()
+                : "No due date"}
+            </div>
           </div>
         )}
       />
