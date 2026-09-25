@@ -66,4 +66,36 @@ router.post("/", authenticateToken, async (req, res) => {
     }
 });
 
+router.get("/:id", authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const pool = await poolPromise;
+
+        const result = await pool.request()
+            .input("Id", sql.Int, id)
+            .input("CreatedBy", sql.Int, req.user.userId)
+            .query(`
+                SELECT *
+                FROM Tasks
+                WHERE Id = @Id AND CreatedBy = @CreatedBy
+            `);
+
+        if (result.recordset.length === 0) {
+            return res.status(404).json({
+                message: "Task not found"
+            });
+        }
+
+        res.json(result.recordset[0]);
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to fetch task"
+        });
+    }
+});
+
 export default router;
