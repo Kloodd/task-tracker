@@ -5,6 +5,8 @@ import dotenv from "dotenv";
 
 import { poolPromise } from "./config/db.js";
 import authRoutes from "./routes/auth.js";
+import taskRoutes from "./routes/tasks.js";
+import {authenticateToken} from "./middleware/authMiddleware.js";
 
 dotenv.config();
 
@@ -15,6 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
+app.use("/api/tasks", taskRoutes);
 
 app.get("/", (req, res) => {
     res.json({
@@ -41,6 +44,13 @@ app.get("/api/test-db", async (req, res) => {
             error: "Database query failed"
         });
     }
+});
+
+app.get("/api/protected", authenticateToken, (req, res) => {
+    res.json({
+        message: "You have accessed a protected route",
+        user: req.user
+    });
 });
 
 app.listen(PORT, async () => {
