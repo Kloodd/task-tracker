@@ -98,4 +98,56 @@ router.get("/:id", authenticateToken, async (req, res) => {
     }
 });
 
+router.put("/:id", authenticateToken, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { Title, Description, Status, DueDate } = req.body;
+
+        if (!Title) {
+            return res.status(400).json({
+                message: "Title is required"
+            });
+        }
+
+        const pool = await poolPromise;
+        const result = await pool.request()
+            .input("Id", sql.Int, id)
+            .input("Title", sql.NVarChar(255), Title)
+            .input("Description", sql.NVarChar(sql.MAX), Description || null)
+            .input("Status", sql.NVarChar(50), Status || "Pending")
+            .input("DueDate", sql.DateTime, DueDate || null)
+            .input("CreatedBy", sql.Int, req.user.userId)
+            .query(`
+                UPDATE Tasks
+                SET
+                    Title = @Title,
+                    Description = @Description,
+                    Status = @Status,
+                    DueDate = @DueDate,
+                    UpdatedAt = GETDATE()
+                OUTPUT INSERTED.*
+                WHERE Id = @Id
+                AND CreatedBy = @CreatedBy
+            `);
+
+        if (result.recordset.length === 0) {
+            return res.status(404).json({
+                message: "Task not found"
+            });
+        }
+
+        res.json({
+            message: "Task updated successfully",
+            taskId: result.recordset[0]
+        });
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to update task"
+        });
+    }
+});
+
 export default router;
