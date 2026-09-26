@@ -1,7 +1,7 @@
 import { Card, Col, Row, Statistic } from "antd";
 import { useEffect, useState } from "react";
 
-function TaskReport() {
+function TaskReport({ refreshTrigger}) {
   const [report, setReport] = useState(null);
 
   useEffect(() => {
@@ -27,7 +27,7 @@ function TaskReport() {
     };
 
     fetchReport();
-  }, []);
+  }, [refreshTrigger]);
 
   if (!report) {
     return <p>Loading report...</p>;
@@ -35,11 +35,11 @@ function TaskReport() {
 
   return (
     <div>
-      <h2>Task Report</h2>
+      <h2 className="task-report-title">Task Report</h2>
 
       <Row gutter={[16, 16]}>
         <Col xs={24} sm={12} md={8}>
-          <Card>
+          <Card className="task-report-card">
             <Statistic
               title="Total Tasks"
               value={report.TotalTasks}
@@ -48,7 +48,7 @@ function TaskReport() {
         </Col>
 
         <Col xs={24} sm={12} md={8}>
-          <Card>
+          <Card className="task-report-card">
             <Statistic
               title="Pending"
               value={report.PendingTasks}
@@ -57,7 +57,7 @@ function TaskReport() {
         </Col>
 
         <Col xs={24} sm={12} md={8}>
-          <Card>
+          <Card className="task-report-card">
             <Statistic
               title="In Progress"
               value={report.InProgressTasks}
@@ -66,7 +66,7 @@ function TaskReport() {
         </Col>
 
         <Col xs={24} sm={12} md={8}>
-          <Card>
+          <Card className="task-report-card">
             <Statistic
               title="Completed"
               value={report.CompletedTasks}
@@ -75,7 +75,7 @@ function TaskReport() {
         </Col>
 
         <Col xs={24} sm={12} md={8}>
-          <Card>
+          <Card className="task-report-card">
             <Statistic
               title="Overdue"
               value={report.OverdueTasks}

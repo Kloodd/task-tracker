@@ -1,18 +1,35 @@
-import { Switch, Typography } from "antd";
+import { Button, Switch, Typography } from "antd";
+import { useNavigate } from "react-router";
 
-function Navbar({ darkMode, onToggleDarkMode }) {
+function Navbar({ darkMode, onToggleDarkMode, isAuthenticated, setIsAuthenticated }) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsAuthenticated(false);
+    navigate("/login");
+  };
+
   return (
     <nav className="navbar">
       <Typography.Title level={3} className="navbar-title">
         Task Tracker
       </Typography.Title>
 
-      <Switch
-        checked={darkMode}
-        onChange={onToggleDarkMode}
-        checkedChildren="🌙"
-        unCheckedChildren="☀️"
-      />
+      <div className="navbar-actions">
+        <Switch
+          checked={darkMode}
+          onChange={onToggleDarkMode}
+          checkedChildren="🌙"
+          unCheckedChildren="☀️"
+        />
+
+        {isAuthenticated && (
+          <Button danger onClick={handleLogout}>
+            Logout
+          </Button>
+        )}
+      </div>
     </nav>
   );
 }

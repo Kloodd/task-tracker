@@ -76,31 +76,31 @@ router.get("/report", authenticateToken, async (req, res) => {
                 SELECT
                     COUNT(*) AS TotalTasks,
 
-                    SUM(CASE
+                    COALESCE(SUM(CASE
                         WHEN Status = 'Pending' THEN 1
                         ELSE 0
-                    END) AS PendingTasks,
+                    END), 0) AS PendingTasks,
 
-                    SUM(CASE
+                    COALESCE(SUM(CASE
                         WHEN Status = 'In Progress' THEN 1
                         ELSE 0
-                    END) AS InProgressTasks,
+                    END), 0) AS InProgressTasks,
 
-                    SUM(CASE
+                    COALESCE(SUM(CASE
                         WHEN Status = 'Completed' THEN 1
                         ELSE 0
-                    END) AS CompletedTasks,
+                    END), 0) AS CompletedTasks,
 
-                    SUM(CASE
-                    WHEN CAST(DueDate AS DATE) < CAST(GETDATE() AS DATE)
+                    COALESCE(SUM(CASE
+                        WHEN CAST(DueDate AS DATE) < CAST(GETDATE() AS DATE)
                             AND Status <> 'Completed'
                         THEN 1
                         ELSE 0
-                    END) AS OverdueTasks
+                    END), 0) AS OverdueTasks
 
                 FROM Tasks
                 WHERE CreatedBy = @CreatedBy
-            `);
+            `)
 
         res.json(result.recordset[0]);
 

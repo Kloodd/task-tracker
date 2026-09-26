@@ -1,7 +1,7 @@
-import { Button, Form, Input, Typography } from "antd";
+import { Button, Form, Input, Typography, message } from "antd";
 import { useNavigate } from "react-router";
 
-function Login() {
+function Login({ setIsAuthenticated }) {
   const navigate = useNavigate();
   const handleLogin = async (values) => {
     try {
@@ -17,7 +17,13 @@ function Login() {
 
       if (response.ok) {
         localStorage.setItem("token", data.token);
+        setIsAuthenticated(true);
+
+        message.success("Login successful!");
+
         navigate("/tasks");
+      } else {
+        message.error(data.message || "Invalid username or password");
       }
     } catch (error) {
       console.error("Error during login:", error);

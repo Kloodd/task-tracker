@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import { Typography } from "antd";
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
 import TaskReport from "./TaskReport";
@@ -18,32 +18,43 @@ function TasksPage() {
     setEditTask(null);
   };
 
-  const hadnleCancelEdit = () => {
+  const handleCancelEdit = () => {
     setEditTask(null);
-  }
+  };
 
   const handleTaskDeleted = () => {
     setRefreshTrigger((value) => value + 1);
     setEditTask(null);
   };
-  
 
   return (
-    <div>
-      <TaskReport />
+    <div className="tasks-page">
+      <div className="tasks-container">
+        <Typography.Title level={1} className="tasks-title">
+          My Tasks
+        </Typography.Title>
 
-      <TaskForm
-        onTaskCreated={handleTaskCreated}
-        editTask={editTask}
-        onTaskUpdated={handleTaskUpdated}
-        onCancelEdit={hadnleCancelEdit}
-      />
+        <TaskReport refreshTrigger={refreshTrigger}/>
 
-      <TaskList
-        refreshTrigger={refreshTrigger}
-        onEditTask={setEditTask}
-        onTaskDeleted={handleTaskDeleted}
-      />
+        <div className="tasks-content">
+          <div className="task-form-card">
+            <TaskForm
+              onTaskCreated={handleTaskCreated}
+              editTask={editTask}
+              onTaskUpdated={handleTaskUpdated}
+              onCancelEdit={handleCancelEdit}
+            />
+          </div>
+
+          <div className="task-list-card">
+            <TaskList
+              refreshTrigger={refreshTrigger}
+              onEditTask={setEditTask}
+              onTaskDeleted={handleTaskDeleted}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

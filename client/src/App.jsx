@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 import { useEffect, useState } from "react";
 import { ConfigProvider, theme } from "antd";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
 import Login from "./components/Login";
 import Register from "./components/Register";
@@ -10,6 +11,10 @@ import "./App.css";
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
     return localStorage.getItem("theme") === "dark";
+  });
+
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return !!localStorage.getItem("token");
   });
 
   useEffect(() => {
@@ -29,14 +34,28 @@ function App() {
       }}
     >
       <BrowserRouter>
-        <Navbar darkMode={darkMode} onToggleDarkMode={handleToggleDarkMode} />
-
+        <Navbar
+          darkMode={darkMode}
+          onToggleDarkMode={handleToggleDarkMode}
+          isAuthenticated={isAuthenticated}
+          setIsAuthenticated={setIsAuthenticated}
+        />
         <Routes>
-          <Route path="/login" element={<Login />} />
+          <Route
+            path="/login"
+            element={<Login setIsAuthenticated={setIsAuthenticated} />}
+          />
 
           <Route path="/register" element={<Register />} />
 
-          <Route path="/tasks" element={<TasksPage />} />
+          <Route
+            path="/tasks"
+            element={
+              <ProtectedRoute>
+                <TasksPage />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

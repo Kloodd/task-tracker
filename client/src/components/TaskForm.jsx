@@ -1,4 +1,12 @@
-import { Button, DatePicker, Form, Input, Select } from "antd";
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  Select,
+  Typography,
+  message,
+} from "antd";
 import { useEffect } from "react";
 import dayjs from "dayjs";
 
@@ -44,24 +52,29 @@ function TaskForm({ onTaskCreated, editTask, onTaskUpdated, onCancelEdit }) {
 
       const data = await response.json();
 
-      console.log(data);
-
       if (response.ok) {
         form.resetFields();
+
         if (editTask) {
+          message.success("Task updated successfully!");
           onTaskUpdated();
         } else {
+          message.success("Task created successfully!");
           onTaskCreated();
         }
+      } else {
+        message.error(data.message || "Something went wrong");
       }
     } catch (error) {
-      console.error("Create task error:", error);
+      console.error("Task save error:", error);
     }
   };
 
   return (
     <div>
-      <h2>{editTask ? "Edit Task" : "Create Task"}</h2>
+      <Typography.Title level={2} className="task-form-title">
+        {editTask ? "Edit Task" : "Create Task"}
+      </Typography.Title>
 
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item
@@ -108,15 +121,13 @@ function TaskForm({ onTaskCreated, editTask, onTaskUpdated, onCancelEdit }) {
           />
         </Form.Item>
 
-        <Button type="primary" htmlType="submit">
-          {editTask ? "Update Task" : "Create Task"}
-        </Button>
-
-        {editTask && (
-          <Button onClick={onCancelEdit} style={{ marginLeft: 8 }}>
-            Cancel
+        <div className="task-form-actions">
+          <Button type="primary" htmlType="submit">
+            {editTask ? "Update Task" : "Create Task"}
           </Button>
-        )}
+
+          {editTask && <Button onClick={onCancelEdit}>Cancel</Button>}
+        </div>
       </Form>
     </div>
   );
