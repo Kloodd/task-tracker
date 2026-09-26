@@ -2,6 +2,7 @@ import { useState } from "react";
 
 import TaskForm from "./TaskForm";
 import TaskList from "./TaskList";
+import TaskReport from "./TaskReport";
 
 function TasksPage() {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
@@ -17,17 +18,25 @@ function TasksPage() {
     setEditTask(null);
   };
 
+  const hadnleCancelEdit = () => {
+    setEditTask(null);
+  }
+
   const handleTaskDeleted = () => {
     setRefreshTrigger((value) => value + 1);
     setEditTask(null);
   };
+  
 
   return (
     <div>
+      <TaskReport />
+
       <TaskForm
         onTaskCreated={handleTaskCreated}
         editTask={editTask}
         onTaskUpdated={handleTaskUpdated}
+        onCancelEdit={hadnleCancelEdit}
       />
 
       <TaskList

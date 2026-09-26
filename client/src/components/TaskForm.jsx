@@ -2,7 +2,7 @@ import { Button, DatePicker, Form, Input, Select } from "antd";
 import { useEffect } from "react";
 import dayjs from "dayjs";
 
-function TaskForm({ onTaskCreated, editTask, onTaskUpdated }) {
+function TaskForm({ onTaskCreated, editTask, onTaskUpdated, onCancelEdit }) {
   const [form] = Form.useForm();
 
   useEffect(() => {
@@ -101,12 +101,22 @@ function TaskForm({ onTaskCreated, editTask, onTaskUpdated }) {
         </Form.Item>
 
         <Form.Item label="Due Date" name="DueDate">
-          <DatePicker />
+          <DatePicker
+            disabledDate={(current) => {
+              return current && current.isBefore(dayjs(), "day");
+            }}
+          />
         </Form.Item>
 
         <Button type="primary" htmlType="submit">
           {editTask ? "Update Task" : "Create Task"}
         </Button>
+
+        {editTask && (
+          <Button onClick={onCancelEdit} style={{ marginLeft: 8 }}>
+            Cancel
+          </Button>
+        )}
       </Form>
     </div>
   );

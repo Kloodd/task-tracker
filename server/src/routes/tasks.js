@@ -66,6 +66,53 @@ router.post("/", authenticateToken, async (req, res) => {
     }
 });
 
+router.get("/report", authenticateToken, async (req, res) => {
+    try {
+        const pool = await poolPromise;
+
+        const result = await pool.request()
+            .input("CreatedBy", sql.Int, req.user.userId)
+            .query(`
+                SELECT
+                    COUNT(*) AS TotalTasks,
+
+                    SUM(CASE
+                        WHEN Status = 'Pending' THEN 1
+                        ELSE 0
+                    END) AS PendingTasks,
+
+                    SUM(CASE
+                        WHEN Status = 'In Progress' THEN 1
+                        ELSE 0
+                    END) AS InProgressTasks,
+
+                    SUM(CASE
+                        WHEN Status = 'Completed' THEN 1
+                        ELSE 0
+                    END) AS CompletedTasks,
+
+                    SUM(CASE
+                    WHEN CAST(DueDate AS DATE) < CAST(GETDATE() AS DATE)
+                            AND Status <> 'Completed'
+                        THEN 1
+                        ELSE 0
+                    END) AS OverdueTasks
+
+                FROM Tasks
+                WHERE CreatedBy = @CreatedBy
+            `);
+
+        res.json(result.recordset[0]);
+
+    } catch (error) {
+        console.error(error);
+
+        res.status(500).json({
+            message: "Failed to generate task report"
+        });
+    }
+});
+
 router.get("/:id", authenticateToken, async (req, res) => {
     try {
         const { id } = req.params;

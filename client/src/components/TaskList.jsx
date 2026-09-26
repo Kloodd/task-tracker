@@ -1,4 +1,4 @@
-import { Button, Listy, Popconfirm } from "antd";
+import { Button, Listy, Popconfirm, Tag } from "antd";
 import { useEffect, useState } from "react";
 
 function TaskList({ refreshTrigger, onEditTask, onTaskDeleted }) {
@@ -66,6 +66,15 @@ function TaskList({ refreshTrigger, onEditTask, onTaskDeleted }) {
                 ? new Date(task.DueDate).toLocaleDateString()
                 : "No due date"}
             </div>
+
+            {task.DueDate &&
+              new Date(task.DueDate).setHours(0, 0, 0, 0) <
+                new Date().setHours(0, 0, 0, 0) &&
+              task.Status !== "Completed" && (
+                <div>
+                  <Tag color="red">Overdue</Tag>
+                </div>
+              )}
 
             <Button type="default" onClick={() => onEditTask(task)}>
               Edit
