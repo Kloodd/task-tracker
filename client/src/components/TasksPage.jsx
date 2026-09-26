@@ -12,18 +12,29 @@ function TasksPage() {
     setRefreshTrigger((value) => value + 1);
   };
 
-    const handleTaskUpdated = () => {
+  const handleTaskUpdated = () => {
     setRefreshTrigger((value) => value + 1);
     setEditTask(null);
-  }
+  };
+
+  const handleTaskDeleted = () => {
+    setRefreshTrigger((value) => value + 1);
+    setEditTask(null);
+  };
 
   return (
     <div>
-      <TaskForm onTaskCreated={handleTaskCreated}
-       editTask={editTask}
-       onTaskUpdated={handleTaskUpdated} />
+      <TaskForm
+        onTaskCreated={handleTaskCreated}
+        editTask={editTask}
+        onTaskUpdated={handleTaskUpdated}
+      />
 
-      <TaskList refreshTrigger={refreshTrigger} onEditTask={setEditTask} />
+      <TaskList
+        refreshTrigger={refreshTrigger}
+        onEditTask={setEditTask}
+        onTaskDeleted={handleTaskDeleted}
+      />
     </div>
   );
 }

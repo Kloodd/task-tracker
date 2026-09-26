@@ -1,7 +1,7 @@
-import { Button,Listy } from "antd";
+import { Button, Listy, Popconfirm } from "antd";
 import { useEffect, useState } from "react";
 
-function TaskList({ refreshTrigger, onEditTask }) {
+function TaskList({ refreshTrigger, onEditTask, onTaskDeleted }) {
   const [tasks, setTasks] = useState([]);
   useEffect(() => {
     const fetchTasks = async () => {
@@ -20,6 +20,31 @@ function TaskList({ refreshTrigger, onEditTask }) {
     fetchTasks();
   }, [refreshTrigger]);
 
+  const handleDelete = async (taskId) => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `http://localhost:5000/api/tasks/${taskId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      const data = await response.json();
+
+      console.log(data);
+
+      if (response.ok) {
+        onTaskDeleted();
+      }
+    } catch (error) {
+      console.error("Delete task error:", error);
+    }
+  };
   return (
     <div>
       <h2>My Task</h2>
@@ -42,12 +67,18 @@ function TaskList({ refreshTrigger, onEditTask }) {
                 : "No due date"}
             </div>
 
-            <Button
-              type="default"
-              onClick={() => onEditTask(task)}
-            >
+            <Button type="default" onClick={() => onEditTask(task)}>
               Edit
             </Button>
+            <Popconfirm
+              title="Delete this task?"
+              description="Are you sure you want to delete this task?"
+              onConfirm={() => handleDelete(task.Id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button danger>Delete</Button>
+            </Popconfirm>
           </div>
         )}
       />
