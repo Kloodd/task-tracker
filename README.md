@@ -73,7 +73,7 @@ The backend provides RESTful API endpoints for:
 ### 1. Clone repository
 
 ```bash
-git clone (https://github.com/Kloodd/task-tracker.git)
+git clone https://github.com/Kloodd/task-tracker.git
 ```
 
 Navigate into the project:
