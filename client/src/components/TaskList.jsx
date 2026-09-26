@@ -1,7 +1,7 @@
-import { Listy } from "antd";
+import { Button,Listy } from "antd";
 import { useEffect, useState } from "react";
 
-function TaskList({ refreshTrigger }) {
+function TaskList({ refreshTrigger, onEditTask }) {
   const [tasks, setTasks] = useState([]);
   useEffect(() => {
     const fetchTasks = async () => {
@@ -41,6 +41,13 @@ function TaskList({ refreshTrigger }) {
                 ? new Date(task.DueDate).toLocaleDateString()
                 : "No due date"}
             </div>
+
+            <Button
+              type="default"
+              onClick={() => onEditTask(task)}
+            >
+              Edit
+            </Button>
           </div>
         )}
       />

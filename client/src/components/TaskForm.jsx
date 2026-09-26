@@ -1,6 +1,23 @@
 import { Button, DatePicker, Form, Input, Select } from "antd";
+import { useEffect } from "react";
+import dayjs from "dayjs";
 
-function TaskForm({ onTaskCreated }) {
+function TaskForm({ onTaskCreated, editTask, onTaskUpdated }) {
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (editTask) {
+      form.setFieldsValue({
+        Title: editTask.Title,
+        Description: editTask.Description,
+        Status: editTask.Status,
+        DueDate: editTask.DueDate ? dayjs(editTask.DueDate) : null,
+      });
+    } else {
+      form.resetFields();
+    }
+  }, [editTask, form]);
+
   const handleSubmit = async (values) => {
     try {
       const token = localStorage.getItem("token");
@@ -10,8 +27,14 @@ function TaskForm({ onTaskCreated }) {
         DueDate: values.DueDate ? values.DueDate.format("YYYY-MM-DD") : null,
       };
 
-      const response = await fetch("http://localhost:5000/api/tasks", {
-        method: "POST",
+      const url = editTask
+        ? `http://localhost:5000/api/tasks/${editTask.Id}`
+        : "http://localhost:5000/api/tasks";
+
+      const method = editTask ? "PUT" : "POST";
+
+      const response = await fetch(url, {
+        method: method,
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -24,7 +47,12 @@ function TaskForm({ onTaskCreated }) {
       console.log(data);
 
       if (response.ok) {
-        onTaskCreated();
+        form.resetFields();
+        if (editTask) {
+          onTaskUpdated();
+        } else {
+          onTaskCreated();
+        }
       }
     } catch (error) {
       console.error("Create task error:", error);
@@ -33,9 +61,9 @@ function TaskForm({ onTaskCreated }) {
 
   return (
     <div>
-      <h2>Create Task</h2>
+      <h2>{editTask ? "Edit Task" : "Create Task"}</h2>
 
-      <Form layout="vertical" onFinish={handleSubmit}>
+      <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Form.Item
           label="Title"
           name="Title"
@@ -77,7 +105,7 @@ function TaskForm({ onTaskCreated }) {
         </Form.Item>
 
         <Button type="primary" htmlType="submit">
-          Create Task
+          {editTask ? "Update Task" : "Create Task"}
         </Button>
       </Form>
     </div>
